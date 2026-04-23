@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Form</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/css">
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #f0f4f0;
+            color: #1c1c1c;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .navbar {
+            background: linear-gradient(90deg, #004d00, #006400);
+            padding: 0 32px;
+            height: 62px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+        }
+        .navdiv {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .name h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.4px;
+        }
+        ul { display: flex; gap: 6px; list-style: none; }
+        li a {
+            color: rgba(255,255,255,0.88);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        li a:hover { background: rgba(255,255,255,0.12); color: white; }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 7px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 1.5px solid rgba(255,255,255,0.7);
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.2px;
+        }
+        .nav-btn-outline { background: transparent; color: white; }
+        .nav-btn-outline:hover { background: rgba(255,255,255,0.15); }
+        .nav-btn-solid { background: white; color: #006400; border-color: white; }
+        .nav-btn-solid:hover { background: #e8f5e9; }
+        .title {
+            text-align: center;
+            background: linear-gradient(180deg, #ffffff 0%, #f0f7f0 100%);
+            padding: 52px 20px 40px;
+            border-bottom: 1px solid #d4e8d4;
+        }
+        .title h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #004d00;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+        .title p {
+            font-size: 0.95rem;
+            color: #5a6a5a;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 940px;
+            margin: 40px auto;
+            padding: 0 24px 70px;
+        }
+        .form-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,60,0,0.09);
+            overflow: hidden;
+            border: 1px solid #d4e8d4;
+        }
+        .form-section-title {
+            background: linear-gradient(90deg, #004d00, #1a7a1a);
+            color: white;
+            padding: 12px 28px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+        .form-section-title::before {
+            content: '';
+            width: 3px; height: 14px;
+            background: #90ee90;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .form-body { padding: 28px 32px; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-control {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+
+        }
+        .form-control input {
+            width: 100%;
+
+        }
+        .form-control.success input{
+            border-color: #2ecc71;
+
+        }
+        .form-control.error input{
+            border-color: #e74c3c;
+        }
+        .form-control i{
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            visibility: hidden;
+        }
+        .form-control small {
+            display: none;
+            color: #e74c3c;
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+        .form-control.error small {
+            display: block;
+        }
+        .form-control.success i.fa-check-square {
+            color: #2ecc71;
+            visibility: visible;
+        }
+        .form-control.error i.fa-exclamation-circle {
+            color: #e74c3c;
+            visibility: visible;
+        }
+        .form-control.success select,
+        .form-control.success textarea {
+            border-color: #2ecc71;
+        }
+        .form-control.error select,
+        .form-control.error textarea,
+        .form-control.error input {
+            border-color: #e74c3c;
+        }
+        .form-group.full { grid-column: 1 / -1; }
+        label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #2d5a2d;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #c8e6c9, transparent);
+            margin: 0;
+        }
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 20px;
+            border: 2px dashed #b2d8b2;
+            border-radius: 10px;
+            background: #f4fbf4;
+        }
+        .photo-preview {
+            width: 88px; height: 108px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #006400;
+            border: 1.5px solid #c8e6c9;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,60,0,0.07);
+        }
+        .photo-upload p { font-size: 0.8rem; color: #5a6a5a; margin-top: 5px; }
+        .photo-upload strong { font-size: 0.9rem; color: #004d00; }
+        input, select, textarea {
+            padding: 10px 13px;
+            border: 1.5px solid #c8e6c9;
+            border-radius: 7px;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafffe;
+            font-family: 'Inter', sans-serif;
+            color: #1c1c1c;
+            width: 100%;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #006400;
+            box-shadow: 0 0 0 3px rgba(0,100,0,0.07);
+            background: white;
+        }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23006400' d='M1 1l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 36px; }
+        textarea { resize: vertical; min-height: 82px; }
+        .btn-upload {
+            display: inline-block;
+            background: white;
+            color: #006400;
+            border: 1.5px solid #006400;
+            padding: 7px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-upload:hover { background: #e8f5e9; transform: translateY(-1px); }
+        .radio-group, .check-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding-top: 4px;
+        }
+        .radio-group label, .check-group label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.88rem;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+            color: #1c1c1c;
+            cursor: pointer;
+        }
+        input[type="radio"], input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: #006400;
+            padding: 0; border: none; box-shadow: none; width: auto;
+        }
+        .declaration {
+            background: #f4fbf4;
+            border-left: 4px solid #006400;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #3a4a3a;
+            line-height: 1.75;
+            margin-bottom: 18px;
+        }
+        .btn-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 32px;
+            border-top: 1px solid #e8f5e9;
+            background: #fafffe;
+        }
+        .btn {
+            padding: 11px 32px;
+            border-radius: 25px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+        }
+        .btn-reset {
+            background: white;
+            color: #006400;
+            border: 1.5px solid #006400;
+        }
+        .btn-reset:hover { background: #e8f5e9; }
+        .btn-submit {
+            background: linear-gradient(135deg, #004d00, #006400);
+            color: white;
+            box-shadow: 0 4px 14px rgba(0,100,0,0.28);
+        }
+        .btn-submit:hover {
+            box-shadow: 0 6px 20px rgba(0,100,0,0.38);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 640px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-body { padding: 20px 18px; }
+            .btn-row { padding: 16px 18px; }
+            .navbar { padding: 0 16px; }
+        }
+    </style>
+    <script>
+    // wait for the page to fully load before running any JS
+    window.onload = function() {
+
+        // show red error on a field
+        function showError(id, msg) {
+            var box = document.getElementById(id).closest('.form-control');
+            box.classList.add('error');
+            box.classList.remove('success');
+            box.querySelector('small').textContent = msg;
+        }
+
+        // show green success on a field
+        function showSuccess(id) {
+            var box = document.getElementById(id).closest('.form-control');
+            box.classList.add('success');
+            box.classList.remove('error');
+            box.querySelector('small').textContent = '';
+        }
+
+        // get the value of a field by id
+        function getVal(id) {
+            return document.getElementById(id).value.trim();
+        }
+
+        // check if a radio button group has a selection
+        function isRadioChecked(name) {
+            var selected = document.querySelector('input[name="' + name + '"]:checked');
+            return selected !== null;
+        }
+
+        function getRadioControl(name) {
+            var input = document.querySelector('input[name="' + name + '"]');
+            return input ? input.closest('.form-control') : null;
+        }
+
+        // show error on a radio group
+        function showRadioError(name, msg) {
+            var box = getRadioControl(name);
+            if (!box) return;
+            box.classList.add('error');
+            box.classList.remove('success');
+            box.querySelector('small').textContent = msg;
+        }
+
+        // show success on a radio group
+        function showRadioSuccess(name) {
+            var box = getRadioControl(name);
+            if (!box) return;
+            box.classList.add('success');
+            box.classList.remove('error');
+            box.querySelector('small').textContent = '';
+        }
+
+        // check if a file input has a file selected
+        function hasFile(id) {
+            var input = document.getElementById(id);
+            return input.files && input.files.length > 0;
+        }
+
+        // show error on a file field
+        function showFileError(id, msg) {
+            var box = document.getElementById(id).closest('.form-control');
+            box.classList.add('error');
+            box.classList.remove('success');
+            box.querySelector('small').textContent = msg;
+        }
+
+        // show success on a file field
+        function showFileSuccess(id) {
+            var box = document.getElementById(id).closest('.form-control');
+            box.classList.add('success');
+            box.classList.remove('error');
+            box.querySelector('small').textContent = '';
+        }
+
+        // photo preview when user picks a photo
+        document.getElementById('photo').addEventListener('change', function() {
+            var file = this.files[0];
+            var preview = document.querySelector('.photo-preview');
+
+            if (!file) {
+                preview.innerHTML = '<i class="fa fa-camera"></i>';
+                return;
+            }
+
+            if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                alert('Please upload a JPG or PNG image only.');
+                this.value = '';
+                preview.innerHTML = '<i class="fa fa-camera"></i>';
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // main validate function — checks all fields one by one
+        function validate() {
+            var isValid = true;
+
+            // --- Personal Info ---
+            if (!hasFile('photo')) {
+                document.getElementById('photo-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('photo-error').style.display = 'none';
+            }
+
+            if (getVal('firstname') === '') {
+                showError('firstname', 'Must not be empty!'); isValid = false;
+            } else { showSuccess('firstname'); }
+
+            if (getVal('lastname') === '') {
+                showError('lastname', 'Must not be empty!'); isValid = false;
+            } else { showSuccess('lastname'); }
+
+            if (getVal('fathersname') === '') {
+                showError('fathersname', "Must not be empty!"); isValid = false;
+            } else { showSuccess('fathersname'); }
+
+            if (getVal('dob') === '') {
+                showError('dob', 'Must select Date of birth!'); isValid = false;
+            } else { showSuccess('dob'); }
+
+            if (!isRadioChecked('gender')) {
+                showRadioError('gender', 'Must select a gender!'); isValid = false;
+            } else { showRadioSuccess('gender'); }
+
+            if (getVal('nationality') === '') {
+                showError('nationality', 'Nationality is required!'); isValid = false;
+            } else { showSuccess('nationality'); }
+
+            if (getVal('cnic') === '') {
+                showError('cnic', 'CNIC / Passport No. is required!'); isValid = false;
+            } else { showSuccess('cnic'); }
+
+            if (getVal('religion') === '') {
+                showError('religion', 'Religion is required!'); isValid = false;
+            } else { showSuccess('religion'); }
+
+            // --- Contact Info ---
+            var email = getVal('email');
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email === '') {
+                showError('email', 'Must not be empty!'); isValid = false;
+            } else if (!emailPattern.test(email)) {
+                showError('email', 'Enter a valid email address'); isValid = false;
+            } else { showSuccess('email'); }
+
+            if (getVal('phoneno') === '') {
+                showError('phoneno', 'Phone number is required!'); isValid = false;
+            } else { showSuccess('phoneno'); }
+
+            if (getVal('paddress') === '') {
+                showError('paddress', 'Address is required!'); isValid = false;
+            } else { showSuccess('paddress'); }
+
+            if (getVal('city') === '') {
+                showError('city', 'City is required!'); isValid = false;
+            } else { showSuccess('city'); }
+
+            if (getVal('country') === '') {
+                showError('country', 'Country is required!'); isValid = false;
+            } else { showSuccess('country'); }
+
+            // --- Academic Info ---
+            if (getVal('faculty') === '') {
+                showError('faculty', 'Must select a faculty!'); isValid = false;
+            } else { showSuccess('faculty'); }
+
+            if (getVal('degree') === '') {
+                showError('degree', 'Must select a degree program!'); isValid = false;
+            } else { showSuccess('degree'); }
+
+            if (getVal('semester') === '') {
+                showError('semester', 'Must select a semester!'); isValid = false;
+            } else { showSuccess('semester'); }
+
+            if (!isRadioChecked('stype')) {
+                showRadioError('stype', 'Must select student type!'); isValid = false;
+            } else { showRadioSuccess('stype'); }
+
+            if (getVal('obtained') === '') {
+                showError('obtained', 'Marks / GPA is required!'); isValid = false;
+            } else { showSuccess('obtained'); }
+
+            if (getVal('pinstitution') === '') {
+                showError('pinstitution', 'Previous institution is required!'); isValid = false;
+            } else { showSuccess('pinstitution'); }
+
+            if (getVal('passingyear') === '') {
+                showError('passingyear', 'Passing year is required!'); isValid = false;
+            } else { showSuccess('passingyear'); }
+
+            // --- Guardian Info ---
+            if (getVal('guardianname') === '') {
+                showError('guardianname', 'Guardian name is required!'); isValid = false;
+            } else { showSuccess('guardianname'); }
+
+            if (getVal('gphone') === '') {
+                showError('gphone', 'Guardian phone is required!'); isValid = false;
+            } else { showSuccess('gphone'); }
+
+            if (getVal('goccupation') === '') {
+                showError('goccupation', 'Guardian occupation is required!'); isValid = false;
+            } else { showSuccess('goccupation'); }
+
+            // --- Documents ---
+            if (!hasFile('cniccopy')) {
+                showFileError('cniccopy', 'CNIC / Passport copy is required!'); isValid = false;
+            } else { showFileSuccess('cniccopy'); }
+
+            if (!hasFile('matriccopy')) {
+                showFileError('matriccopy', 'Matric certificate is required!'); isValid = false;
+            } else { showFileSuccess('matriccopy'); }
+
+            if (!hasFile('intermediatecopy')) {
+                showFileError('intermediatecopy', 'Intermediate certificate is required!'); isValid = false;
+            } else { showFileSuccess('intermediatecopy'); }
+
+            if (!hasFile('domicilecopy')) {
+                showFileError('domicilecopy', 'Domicile certificate is required!'); isValid = false;
+            } else { showFileSuccess('domicilecopy'); }
+
+            if (!hasFile('charactercopy')) {
+                showFileError('charactercopy', 'Character certificate is required!'); isValid = false;
+            } else { showFileSuccess('charactercopy'); }
+
+            return isValid;
+        }
+
+        // when the form is submitted
+        document.getElementById('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var formIsValid = validate();
+
+            if (!formIsValid) {
+                return; // stop here if there are errors
+            }
+
+            if (!document.getElementById('declaration').checked) {
+                alert('Please agree to the terms and conditions before submitting.');
+                return;
+            }
+
+            alert('Thank you, ' + getVal('firstname') + ' ' + getVal('lastname') + '! Form submitted successfully!');
+            this.reset();
+            document.querySelector('.photo-preview').innerHTML = '<i class="fa fa-camera"></i>';
+        });
+
+    }; // end window.onload
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <nav class="navbar">
+    <div class="navdiv">
+        <div class="name"><h1>My University</h1></div>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <button class="nav-btn nav-btn-outline">Sign In</button>
+            <button class="nav-btn nav-btn-solid">Sign Up</button>
+        </div>
+    </div>
+</nav>
+<div class="title">
+    <h2>Student Registration Form</h2>
+    <p>Academic Year 2026–2027 &nbsp;|&nbsp; Please fill all fields carefully.</p>
+</div>
+<div class="container">
+<form class="form-card" id="form">
+<div class="form-section-title">Personal Information</div>
+<div class="form-body">
+<div class="form-grid">
+<div class="form-group full">
+    <div class="photo-upload">
+        <div class="photo-preview">
+            <i class="fa fa-camera-retro" aria-hidden="true"></i>
+        </div>
+        <div>
+            <strong>Passport Size Photo</strong>
+            <p>Upload a recent passport-size photograph (JPG/PNG, max 2MB)</p>
+            <br>
+            <label class="btn-upload" for="photo">Choose File</label>
+            <input type="file" id="photo" accept=".jpg,.jpeg,.png" style="display:none;">
+            <small id="photo-error" style="display:none; color:#e74c3c; font-size:0.75rem; margin-top:6px;">Please upload a passport size photo!</small>
+        </div>
+    </div>
+</div>
+<div class="form-grid">
+    <div class="form-control">
+        <label>First Name</label>
+        <input type="text" id="firstname" placeholder="e.g Faryal">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Last Name</label>
+        <input type="text" id="lastname" placeholder="e.g Waseem">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Father's Name</label>
+        <input type="text" id="fathersname" placeholder="e.g Ahmad">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Date of Birth</label>
+        <input type="date" id="dob">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Gender</label>
+        <div class="radio-group">
+            <label><input type="radio" name="gender" value="male" id="gender-male">Male</label>
+            <label><input type="radio" name="gender" value="female" id="gender-female">Female</label>
+        </div>
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+          <label>Nationality</label>
+          <input type="text" id="nationality" placeholder="e.g Pakistani">
+          <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+          <i class="fa fa-check-square" aria-hidden="true"></i>
+          <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>CNIC/Passport No.</label>
+        <input type="text" id="cnic" placeholder="e.g 00000-0000000-0">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Religion</label>
+        <input type="text" id="religion" placeholder="e.g islam">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+</div>
+</div>
+</div>
+<div class="divider"></div>
+<div class="form-section-title">Contact Information</div>
+<div class="form-body">
+<div class="form-grid">
+    <div class="form-control">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="abc@example.com">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Phone Number</label>
+        <input type="tel" id="phoneno" placeholder="+92 300 0000000">
+         <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+         <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Permanent Address</label>
+        <textarea placeholder="House No., Street, City, Province, Country" id="paddress"></textarea>
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>City</label>
+        <input type="text" placeholder="e.g. Islamabad" id="city">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+    <div class="form-control">
+        <label>Country</label>
+        <input type="text" placeholder="e.g Pakistan" id="country">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+</div>
+</div>
+<div class="divider"></div>
+<div class="form-section-title">Academic Information</div>
+<div class="form-body">
+    <div class="form-grid">
+        <div class="form-control">
+            <label>Faculty/Department</label>
+            <select id="faculty">
+                <option value="">..Select Faculty..</option>
+                <option>Faculty of Islamic Studies</option>
+                <option>Faculty of Engineering</option>
+                <option>Faculty of Management Sciences</option>
+                <option>Faculty of Social Sciences</option>
+                <option>Faculty of Shariah and Law</option>
+                <option>Faculty of Languages</option>
+                <option>Faculty of Education</option>
+                <option>Faculty of Computer Science</option>
+            </select>
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+        <div class="form-control">
+            <label>Degree Program</label>
+            <select id="degree">
+                <option value="">..Select Program..</option>
+                <option>Bachelor's(BS/BBA/LLB)</option>
+                <option>Master's(MS/MBA/LLM/MPHIL)</option>
+                <option>PHD</option>
+                <option>Diploma</option>
+            </select>
+             <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+             <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+        <div class="form-control">
+            <label>Semester</label>
+            <select id="semester">
+                <option value="">..Select..</option>
+                <option>Spring 2026</option>
+                <option>Fall 2026</option>
+            </select>
+             <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+             <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+        <div class="form-control">
+            <label>Student Type</label>
+            <div class="radio-group">
+                <label><input type="radio" name="stype" value="regular">Regular</label>
+                <label><input type="radio" name="stype" value="self">Self-Finance</label>
+                <label><input type="radio" name="stype" value="foreign">Foreign</label>
+            </div>
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+        <div class="form-control">
+            <label>Previous Qualification</label>
+            <select id="qualification">
+                <option value="">..Select..</option>
+                <option>Matriculation (SSC)</option>
+                <option>Intermediate (HSSC/ A-Level)</option>
+                <option>Bachelor's Degree</option>
+                <option>Master's Degree</option>
+            </select>
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+        <div class="form-control">
+            <label>Obtained Marks/GPA</label>
+            <input type="text" placeholder="e.g. 850/1100 or 3.8/4GPA" id="obtained">
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+        <div class="form-control">
+            <label>Previous Institution</label>
+            <input type="text" placeholder="Name of Last Attended Institution" id="pinstitution">
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+        <div class="form-control">
+            <label>Passing Year</label>
+            <input type="text" placeholder="e.g. 2024" id="passingyear">
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
+    </div>
+</div>
+<div class="form-section-title">Guardian/Parent Information</div>
+<div class="form-body">
+<div class="form-grid">
+    <div class="form-control">
+        <label>Guardian Name</label>
+        <input type="text" id="guardianname" placeholder="Full Name">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+<div class="form-control">
+    <label>Relationship</label>
+    <select id="relationship">
+        <option value="">--Select--</option>
+        <option>Father</option>
+        <option>Mother</option>
+        <option>Spouse</option>
+        <option>Sibiling</option>
+        <option>Other</option>
+    </select>
+      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+      <i class="fa fa-check-square" aria-hidden="true"></i>
+    <small>Error MSG</small>
+</div>
+<div class="form-control">
+    <label>Guardian Phone</label>
+    <input type="tel" placeholder="+92 300 0000000" id="gphone">
+    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+    <i class="fa fa-check-square" aria-hidden="true"></i>
+    <small>Error MSG</small>
+</div>
+<div class="form-control">
+    <label>Guardian Occupation</label>
+    <input type="text" placeholder="e.g Engineer" id="goccupation">
+    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+    <i class="fa fa-check-square" aria-hidden="true"></i>
+    <small>Error MSG</small>
+</div>
+</div>
+</div>
+<div class="divider"></div>
+<div class="form-section-title">Upload Documents</div>
+<div class="form-body">
+<div class="form-grid">
+    <div class="form-control">
+        <label>CNIC/Passport Copy</label>
+        <input type="file" accept=".pdf,.jpg,.png" id="cniccopy">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
+<div class="form-control">
+    <label>Matric/O-Level Certificate</label>
+    <input type="file" accept=".pdf,.jpg,.png" id="matriccopy">
+    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+    <i class="fa fa-check-square" aria-hidden="true"></i>
+    <small>Error MSG</small>
+</div>
+<div class="form-control">
+    <label>Intermediate/A-Level Certificate</label>
+    <input type="file" accept=".pdf,.jpg,.png" id="intermediatecopy">
+    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+    <i class="fa fa-check-square" aria-hidden="true"></i>
+    <small>Error MSG</small>
+</div>
+<div class="form-control">
+    <label>Domicile Certificate</label>
+    <input type="file" accept=".pdf,.jpg,.png" id="domicilecopy">
+    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+    <i class="fa fa-check-square" aria-hidden="true"></i>
+    <small>Error MSG</small>
+</div>
+<div class="form-control">
+    <label>Character Certificate</label>
+    <input type="file" accept=".pdf,.jpg,.png" id="charactercopy">
+    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+    <i class="fa fa-check-square" aria-hidden="true"></i>
+    <small>Error MSG</small>
+</div>
+</div> 
+</div>
+<div class="divider"></div>
+<div class="form-section-title">Declaration</div>
+<div class="form-body">
+    <div class="declaration">
+        <p>I hereby declare that the information provided in this form is true and correct to the best of my knowledge.
+           I understand that providing false information may result in rejection of my application or cancellation of admission.
+           I also agree to abide by the rules and regulations of the university if admitted.
+        </p>
+    </div>
+    <div class="check-group">
+        <input type="checkbox" id="declaration" required>
+        <label for="declaration">I agree to the terms and conditions.</label>
+    </div>
+</div>
+<div class="btn-row">
+<button type="submit" class="btn btn-submit">Submit Registration</button>
+<button type="reset" class="btn btn-reset">Reset Form</button>
+</div>
+</form>
+</div>
+</body>
+</html>
