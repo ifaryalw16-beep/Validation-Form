@@ -90,6 +90,7 @@
             box-shadow: 0 4px 24px rgba(0,60,0,0.09);
             overflow: hidden;
             border: 1px solid #d4e8d4;
+    
         }
         .form-section-title {
             background: linear-gradient(90deg, #004d00, #1a7a1a);
@@ -112,7 +113,7 @@
         }
         .form-body { padding: 28px 32px; }
         .form-grid {
-            display: grid;
+            display: block;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
@@ -335,6 +336,34 @@
             .form-grid { gap: 16px; }
             .title h2 { font-size: 1.7rem; }
         }
+        .success-message {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,60,0,0.09);
+            border: 1px solid #d4e8d4;
+            padding: 60px 40px;
+            margin: 40px auto;
+            max-width: 940px;
+        }
+        .success-message .tick {
+            font-size: 4rem;
+            color: #2ecc71;
+            margin-bottom: 16px;
+        }
+        .success-message h3 {
+            font-size: 1.6rem;
+            color: #004d00;
+            margin-bottom: 10px;
+        }
+        .success-message p {
+            font-size: 0.95rem;
+            color: #5a6a5a;
+        }
     </style>
     <script>
     // wait for the page to fully load before running any JS
@@ -360,17 +389,15 @@
         function getVal(id) {
             return document.getElementById(id).value.trim();
         }
-
-        // check if a radio button group has a selection
-        function isRadioChecked(name) {
-            var selected = document.querySelector('input[name="' + name + '"]:checked');
-            return selected !== null;
-        }
-
-        function getRadioControl(name) {
-            var input = document.querySelector('input[name="' + name + '"]');
-            return input ? input.closest('.form-control') : null;
-        }
+       // check if a radio button group has a selection
+       const isRadioChecked = (name) => {
+       const selected = document.querySelector(`input[name="${name}"]:checked`);
+       return selected !== null;
+        };
+       const getRadioControl = (name) => {
+       const input = document.querySelector(`input[name="${name}"]`);
+       return input ? input.closest('.form-control') : null;
+        };
 
         // show error on a radio group
         function showRadioError(name, msg) {
@@ -391,11 +418,11 @@
         }
 
         // check if a file input has a file selected
-        function hasFile(id) {
-            var input = document.getElementById(id);
-            return input.files && input.files.length > 0;
-        }
-
+        const hasFile = (id) => {
+        const input = document.getElementById(id);
+        return (input?.files?.length ?? 0) > 0;
+        };
+        
         // show error on a file field
         function showFileError(id, msg) {
             var box = document.getElementById(id).closest('.form-control');
@@ -414,181 +441,158 @@
 
         // photo preview when user picks a photo
         document.getElementById('photo').addEventListener('change', function() {
-            var file = this.files[0];
-            var preview = document.querySelector('.photo-preview');
+           const file = this.files[0];
+           const preview = document.querySelector('.photo-preview');
 
-            if (!file) {
-                preview.innerHTML = '<i class="fa fa-camera"></i>';
-                return;
-            }
+        // 1. Reset if no file is selected (user clicked cancel)
+           if (!file) {
+           preview.innerHTML = '<i class="fa fa-camera"></i>';
+           return;
+           }
 
-            if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
-                alert('Please upload a JPG or PNG image only.');
-                this.value = '';
-                preview.innerHTML = '<i class="fa fa-camera"></i>';
-                return;
-            }
+           // 2. Strict Type Validation
+           const validTypes = ['image/jpeg', 'image/png'];
+           if (!validTypes.includes(file.type)) {
+           alert('Please upload a JPG or PNG image only.');
+           this.value = ''; // Clear the input so a bad file isn't submitted
+           preview.innerHTML = '<i class="fa fa-camera"></i>';
+           return;
+           }
 
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+           // 3. Read and Display Preview
+           const reader = new FileReader();
+    
+           // This runs once the file reading is complete
+           reader.onload = (e) => {
+           preview.innerHTML = `
+            <img src="${e.target.result}" 
+                 style="width:100%; height:100%; object-fit:cover; border-radius:8px;" 
+                 alt="Preview">`;
             };
+
             reader.readAsDataURL(file);
-        });
-
+            });
         // main validate function — checks all fields one by one
-        function validate() {
-            var isValid = true;
+        const validate = () => {
+    // We use 'let' here because the value will change to false if an error is found
+    let isValid = true;
 
-            // --- Personal Info ---
-            if (!hasFile('photo')) {
-                document.getElementById('photo-error').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('photo-error').style.display = 'none';
-            }
+    // --- Personal Info ---
+    const photoError = document.getElementById('photo-error');
+    if (!hasFile('photo')) {
+        photoError.style.display = 'block';
+        isValid = false;
+    } else {
+        photoError.style.display = 'none';
+    }
 
-            if (getVal('firstname') === '') {
-                showError('firstname', 'Must not be empty!'); isValid = false;
-            } else { showSuccess('firstname'); }
-
-            if (getVal('lastname') === '') {
-                showError('lastname', 'Must not be empty!'); isValid = false;
-            } else { showSuccess('lastname'); }
-
-            if (getVal('fathersname') === '') {
-                showError('fathersname', "Must not be empty!"); isValid = false;
-            } else { showSuccess('fathersname'); }
-
-            if (getVal('dob') === '') {
-                showError('dob', 'Must select Date of birth!'); isValid = false;
-            } else { showSuccess('dob'); }
-
-            if (!isRadioChecked('gender')) {
-                showRadioError('gender', 'Must select a gender!'); isValid = false;
-            } else { showRadioSuccess('gender'); }
-
-            if (getVal('nationality') === '') {
-                showError('nationality', 'Nationality is required!'); isValid = false;
-            } else { showSuccess('nationality'); }
-
-            if (getVal('cnic') === '') {
-                showError('cnic', 'CNIC / Passport No. is required!'); isValid = false;
-            } else { showSuccess('cnic'); }
-
-            if (getVal('religion') === '') {
-                showError('religion', 'Religion is required!'); isValid = false;
-            } else { showSuccess('religion'); }
-
-            // --- Contact Info ---
-            var email = getVal('email');
-            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (email === '') {
-                showError('email', 'Must not be empty!'); isValid = false;
-            } else if (!emailPattern.test(email)) {
-                showError('email', 'Enter a valid email address'); isValid = false;
-            } else { showSuccess('email'); }
-
-            if (getVal('phoneno') === '') {
-                showError('phoneno', 'Phone number is required!'); isValid = false;
-            } else { showSuccess('phoneno'); }
-
-            if (getVal('paddress') === '') {
-                showError('paddress', 'Address is required!'); isValid = false;
-            } else { showSuccess('paddress'); }
-
-            if (getVal('city') === '') {
-                showError('city', 'City is required!'); isValid = false;
-            } else { showSuccess('city'); }
-
-            if (getVal('country') === '') {
-                showError('country', 'Country is required!'); isValid = false;
-            } else { showSuccess('country'); }
-
-            // --- Academic Info ---
-            if (getVal('faculty') === '') {
-                showError('faculty', 'Must select a faculty!'); isValid = false;
-            } else { showSuccess('faculty'); }
-
-            if (getVal('degree') === '') {
-                showError('degree', 'Must select a degree program!'); isValid = false;
-            } else { showSuccess('degree'); }
-
-            if (getVal('semester') === '') {
-                showError('semester', 'Must select a semester!'); isValid = false;
-            } else { showSuccess('semester'); }
-
-            if (!isRadioChecked('stype')) {
-                showRadioError('stype', 'Must select student type!'); isValid = false;
-            } else { showRadioSuccess('stype'); }
-
-            if (getVal('obtained') === '') {
-                showError('obtained', 'Marks / GPA is required!'); isValid = false;
-            } else { showSuccess('obtained'); }
-
-            if (getVal('pinstitution') === '') {
-                showError('pinstitution', 'Previous institution is required!'); isValid = false;
-            } else { showSuccess('pinstitution'); }
-
-            if (getVal('passingyear') === '') {
-                showError('passingyear', 'Passing year is required!'); isValid = false;
-            } else { showSuccess('passingyear'); }
-
-            // --- Guardian Info ---
-            if (getVal('guardianname') === '') {
-                showError('guardianname', 'Guardian name is required!'); isValid = false;
-            } else { showSuccess('guardianname'); }
-
-            if (getVal('gphone') === '') {
-                showError('gphone', 'Guardian phone is required!'); isValid = false;
-            } else { showSuccess('gphone'); }
-
-            if (getVal('goccupation') === '') {
-                showError('goccupation', 'Guardian occupation is required!'); isValid = false;
-            } else { showSuccess('goccupation'); }
-
-            // --- Documents ---
-            if (!hasFile('cniccopy')) {
-                showFileError('cniccopy', 'CNIC / Passport copy is required!'); isValid = false;
-            } else { showFileSuccess('cniccopy'); }
-
-            if (!hasFile('matriccopy')) {
-                showFileError('matriccopy', 'Matric certificate is required!'); isValid = false;
-            } else { showFileSuccess('matriccopy'); }
-
-            if (!hasFile('intermediatecopy')) {
-                showFileError('intermediatecopy', 'Intermediate certificate is required!'); isValid = false;
-            } else { showFileSuccess('intermediatecopy'); }
-
-            if (!hasFile('domicilecopy')) {
-                showFileError('domicilecopy', 'Domicile certificate is required!'); isValid = false;
-            } else { showFileSuccess('domicilecopy'); }
-
-            if (!hasFile('charactercopy')) {
-                showFileError('charactercopy', 'Character certificate is required!'); isValid = false;
-            } else { showFileSuccess('charactercopy'); }
-
-            return isValid;
+    // Generic helper to check empty values
+    const checkEmpty = (id, message) => {
+        if (getVal(id) === '') {
+            showError(id, message);
+            isValid = false;
+        } else {
+            showSuccess(id);
         }
+    };
+
+    checkEmpty('firstname', 'Must not be empty!');
+    checkEmpty('lastname', 'Must not be empty!');
+    checkEmpty('fathersname', 'Must not be empty!');
+    checkEmpty('dob', 'Must select Date of birth!');
+
+    if (!isRadioChecked('gender')) {
+        showRadioError('gender', 'Must select a gender!');
+        isValid = false;
+    } else {
+        showRadioSuccess('gender');
+    }
+
+    checkEmpty('nationality', 'Nationality is required!');
+    checkEmpty('cnic', 'CNIC / Passport No. is required!');
+    checkEmpty('religion', 'Religion is required!');
+
+    // --- Contact Info ---
+    const email = getVal('email');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (email === '') {
+        showError('email', 'Must not be empty!');
+        isValid = false;
+    } else if (!emailPattern.test(email)) {
+        showError('email', 'Enter a valid email address');
+        isValid = false;
+    } else {
+        showSuccess('email');
+    }
+
+    checkEmpty('phoneno', 'Phone number is required!');
+    checkEmpty('paddress', 'Address is required!');
+    checkEmpty('city', 'City is required!');
+    checkEmpty('country', 'Country is required!');
+
+    // --- Academic Info ---
+    checkEmpty('faculty', 'Must select a faculty!');
+    checkEmpty('degree', 'Must select a degree program!');
+    checkEmpty('semester', 'Must select a semester!');
+
+    if (!isRadioChecked('stype')) {
+        showRadioError('stype', 'Must select student type!');
+        isValid = false;
+    } else {
+        showRadioSuccess('stype');
+    }
+
+    checkEmpty('obtained', 'Marks / GPA is required!');
+    checkEmpty('pinstitution', 'Previous institution is required!');
+    checkEmpty('passingyear', 'Passing year is required!');
+
+    // --- Guardian Info ---
+    checkEmpty('guardianname', 'Guardian name is required!');
+    checkEmpty('gphone', 'Guardian phone is required!');
+    checkEmpty('goccupation', 'Guardian occupation is required!');
+
+    // --- Documents ---
+    const checkFile = (id, message) => {
+        if (!hasFile(id)) {
+            showFileError(id, message);
+            isValid = false;
+        } else {
+            showFileSuccess(id);
+        }
+    };
+
+    checkFile('cniccopy', 'CNIC / Passport copy is required!');
+    checkFile('matriccopy', 'Matric certificate is required!');
+    checkFile('intermediatecopy', 'Intermediate certificate is required!');
+    checkFile('domicilecopy', 'Domicile certificate is required!');
+    checkFile('charactercopy', 'Character certificate is required!');
+
+    return isValid;
+};
 
         // when the form is submitted
-        document.getElementById('form').addEventListener('submit', function(e) {
+        const form = document.getElementById('form');
+        const successMsg = document.getElementById('successmessage');
+
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
 
             var formIsValid = validate();
 
-            if (!formIsValid) {
-                return; // stop here if there are errors
-            }
+            if (!formIsValid) return;
 
             if (!document.getElementById('declaration').checked) {
                 alert('Please agree to the terms and conditions before submitting.');
                 return;
             }
 
-            alert('Thank you, ' + getVal('firstname') + ' ' + getVal('lastname') + '! Form submitted successfully!');
-            this.reset();
-            document.querySelector('.photo-preview').innerHTML = '<i class="fa fa-camera"></i>';
+            var name = getVal('firstname') + ' ' + getVal('lastname');
+
+            // hide form, show success message
+            form.style.display = 'none';
+            document.getElementById('success-name').textContent = name;
+            successMsg.style.display = 'flex';
         });
 
     }; // end window.onload
@@ -665,7 +669,7 @@
     </div>
     <div class="form-control">
         <label>Gender</label>
-        <div class="radio-group">
+        <div class="radio-group" id="radio-gender" style="display: block;">
             <label><input type="radio" name="gender" value="male" id="gender-male">Male</label>
             <label><input type="radio" name="gender" value="female" id="gender-female">Female</label>
         </div>
@@ -930,6 +934,11 @@
 <button type="reset" class="btn btn-reset">Reset Form</button>
 </div>
 </form>
+</div>
+<div class="success-message" id="successmessage">
+    <div class="tick"><i class="fa fa-check-circle"></i></div>
+    <h3>Thank you, <span id="success-name"></span>!</h3>
+    <p>Your form has been submitted successfully.<br>We will inform you shortly.</p>
 </div>
 </body>
 </html>
