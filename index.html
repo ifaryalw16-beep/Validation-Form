@@ -581,7 +581,7 @@
                 else if (/[0-9]/.test(c)) digits++;
                 else if (specialChars.indexOf(c) !== -1) special++;
             }
-            if (v.length === 8 && alpha === 3 && digits === 4 && special === 1) {
+            if (v.length >= 8 && alpha >= 3 && digits >= 4 && special >= 1) {
                 showSuccess('password'); isPasswordValid = true;
             } else {
                 showError('password', 'Need 3 letters, 4 numbers, 1 special char (Total 8)'); isPasswordValid = false;
