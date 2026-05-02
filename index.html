@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -113,8 +113,8 @@
         }
         .form-body { padding: 28px 32px; }
         .form-grid {
-            display: block;
-            grid-template-columns: 1fr 1fr;
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 20px;
         }
         .form-control {
@@ -303,9 +303,16 @@
             box-shadow: 0 6px 20px rgba(0,100,0,0.38);
             transform: translateY(-2px);
         }
+        .btn-submit:disabled {
+            background: #cccccc;
+            color: #888888;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
 
-        @media (max-width: 640px) {
-            .form-grid { grid-template-columns: 1fr; }
+        @media (max-width: 768px) {
             .form-body { padding: 20px 18px; }
             .btn-row { padding: 16px 18px; }
             .navbar { padding: 0 16px; }
@@ -321,20 +328,6 @@
             .btn-row { flex-direction: column-reverse; }
             .btn { width: 100%; text-align: center; }
             .form-section-title { font-size: 0.72rem; padding: 10px 16px; }
-        }
-
-        @media (max-width: 400px) {
-            .title h2 { font-size: 1.2rem; }
-            .nav-btn { padding: 5px 10px; font-size: 0.72rem; }
-            .form-body { padding: 16px 12px; }
-            input, select, textarea { font-size: 0.82rem; }
-        }
-
-        @media (min-width: 641px) and (max-width: 900px) {
-            .container { padding: 0 16px 50px; }
-            .form-body { padding: 22px 24px; }
-            .form-grid { gap: 16px; }
-            .title h2 { font-size: 1.7rem; }
         }
         .success-message {
             display: none;
@@ -366,230 +359,364 @@
         }
     </style>
     <script>
-    // wait for the page to fully load before running any JS
     window.onload = function() {
 
-        // show red error on a field
+        // --- State flags ---
+        let isFirstnameValid    = false;
+        let isLastnameValid     = false;
+        let isFathersValid      = false;
+        let isPhotoValid        = false;
+        let isDobValid          = false;
+        let isGenderValid       = false;
+        let isNationalityValid  = false;
+        let isCnicValid         = false;
+        let isReligionValid     = false;
+        let isEmailValid        = false;
+        let isPasswordValid     = false;
+        let isPhoneValid        = false;
+        let isPaddressValid     = false;
+        let isProvinceValid     = false;
+        let isCityValid         = false;
+        let isCountryValid      = false;
+        let isFacultyValid      = false;
+        let isDegreeValid       = false;
+        let isSemesterValid     = false;
+        let isStypeValid        = false;
+        let isQualificationValid = false;
+        let isObtainedValid     = false;
+        let isPinstitutionValid = false;
+        let isPassingyearValid  = false;
+        let isGuardiannameValid = false;
+        let isRelationshipValid = false;
+        let isGphoneValid       = false;
+        let isGoccupationValid  = false;
+        let isCniccopyValid     = false;
+        let isMatriccopyValid   = false;
+        let isIntermediateValid = false;
+        let isDomicileValid     = false;
+        let isCharacterValid    = false;
+        let isDeclarationValid  = false;
+
+        // --- Helpers ---
         function showError(id, msg) {
             var box = document.getElementById(id).closest('.form-control');
             box.classList.add('error');
             box.classList.remove('success');
             box.querySelector('small').textContent = msg;
         }
-
-        // show green success on a field
         function showSuccess(id) {
             var box = document.getElementById(id).closest('.form-control');
             box.classList.add('success');
             box.classList.remove('error');
             box.querySelector('small').textContent = '';
         }
-
-        // get the value of a field by id
         function getVal(id) {
             return document.getElementById(id).value.trim();
         }
-       // check if a radio button group has a selection
-       const isRadioChecked = (name) => {
-       const selected = document.querySelector(`input[name="${name}"]:checked`);
-       return selected !== null;
+        const isRadioChecked = (name) => {
+            return document.querySelector(`input[name="${name}"]:checked`) !== null;
         };
-       const getRadioControl = (name) => {
-       const input = document.querySelector(`input[name="${name}"]`);
-       return input ? input.closest('.form-control') : null;
+        const getRadioControl = (name) => {
+            const input = document.querySelector(`input[name="${name}"]`);
+            return input ? input.closest('.form-control') : null;
         };
-
-        // show error on a radio group
         function showRadioError(name, msg) {
             var box = getRadioControl(name);
             if (!box) return;
-            box.classList.add('error');
-            box.classList.remove('success');
+            box.classList.add('error'); box.classList.remove('success');
             box.querySelector('small').textContent = msg;
         }
-
-        // show success on a radio group
         function showRadioSuccess(name) {
             var box = getRadioControl(name);
             if (!box) return;
-            box.classList.add('success');
-            box.classList.remove('error');
+            box.classList.add('success'); box.classList.remove('error');
             box.querySelector('small').textContent = '';
         }
-
-        // check if a file input has a file selected
         const hasFile = (id) => {
-        const input = document.getElementById(id);
-        return (input?.files?.length ?? 0) > 0;
+            const input = document.getElementById(id);
+            return (input?.files?.length ?? 0) > 0;
         };
-        
-        // show error on a file field
         function showFileError(id, msg) {
             var box = document.getElementById(id).closest('.form-control');
-            box.classList.add('error');
-            box.classList.remove('success');
+            box.classList.add('error'); box.classList.remove('success');
             box.querySelector('small').textContent = msg;
         }
-
-        // show success on a file field
         function showFileSuccess(id) {
             var box = document.getElementById(id).closest('.form-control');
-            box.classList.add('success');
-            box.classList.remove('error');
+            box.classList.add('success'); box.classList.remove('error');
             box.querySelector('small').textContent = '';
         }
 
-        // photo preview when user picks a photo
-        document.getElementById('photo').addEventListener('change', function() {
-           const file = this.files[0];
-           const preview = document.querySelector('.photo-preview');
+        // --- checkButton ---
+        function checkButton() {
+            var btn = document.getElementById('submitBtn');
+            var allValid = isFirstnameValid && isLastnameValid && isFathersValid && isPhotoValid &&
+                isDobValid && isGenderValid && isNationalityValid && isCnicValid &&
+                isReligionValid && isEmailValid && isPasswordValid && isPhoneValid &&
+                isPaddressValid && isProvinceValid && isCityValid && isCountryValid && isFacultyValid &&
+                isDegreeValid && isSemesterValid && isStypeValid && isQualificationValid && isObtainedValid &&
+                isPinstitutionValid && isPassingyearValid && isGuardiannameValid &&
+                isRelationshipValid && isGphoneValid && isGoccupationValid && isCniccopyValid &&
+                isMatriccopyValid && isIntermediateValid && isDomicileValid &&
+                isCharacterValid && isDeclarationValid;
+            btn.disabled = !allValid;
+        }
 
-        // 1. Reset if no file is selected (user clicked cancel)
-           if (!file) {
-           preview.innerHTML = '<i class="fa fa-camera"></i>';
-           return;
-           }
-
-           // 2. Strict Type Validation
-           const validTypes = ['image/jpeg', 'image/png'];
-           if (!validTypes.includes(file.type)) {
-           alert('Please upload a JPG or PNG image only.');
-           this.value = ''; // Clear the input so a bad file isn't submitted
-           preview.innerHTML = '<i class="fa fa-camera"></i>';
-           return;
-           }
-
-           // 3. Read and Display Preview
-           const reader = new FileReader();
-    
-           // This runs once the file reading is complete
-           reader.onload = (e) => {
-           preview.innerHTML = `
-            <img src="${e.target.result}" 
-                 style="width:100%; height:100%; object-fit:cover; border-radius:8px;" 
-                 alt="Preview">`;
-            };
-
-            reader.readAsDataURL(file);
+        // --- Personal Info ---
+        document.getElementById('firstname').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('firstname', 'Must not be empty!'); isFirstnameValid = false; }
+            else if (this.value.trim().length < 3) { showError('firstname', 'Must be at least 3 characters!'); isFirstnameValid = false; }
+            else { showSuccess('firstname'); isFirstnameValid = true; }
+            checkButton();
+        });
+        document.getElementById('lastname').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('lastname', 'Must not be empty!'); isLastnameValid = false; }
+            else if (this.value.trim().length < 3) { showError('lastname', 'Must be at least 3 characters!'); isLastnameValid = false; }
+            else { showSuccess('lastname'); isLastnameValid = true; }
+            checkButton();
+        });
+        document.getElementById('fathersname').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('fathersname', 'Must not be empty!'); isFathersValid = false; }
+            else if (this.value.trim().length < 3) { showError('fathersname', 'Must be at least 3 characters!'); isFathersValid = false; }
+            else { showSuccess('fathersname'); isFathersValid = true; }
+            checkButton();
+        });
+        document.getElementById('dob').addEventListener('change', function() {
+            if (this.value === '') { showError('dob', 'Date of birth is required!'); isDobValid = false; }
+            else { showSuccess('dob'); isDobValid = true; }
+            checkButton();
+        });
+        document.querySelectorAll('input[name="gender"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                showRadioSuccess('gender'); isGenderValid = true; checkButton();
             });
-        // main validate function — checks all fields one by one
-        const validate = () => {
-    // We use 'let' here because the value will change to false if an error is found
-    let isValid = true;
+        });
+        document.getElementById('nationality').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('nationality', 'Nationality is required!'); isNationalityValid = false; }
+            else { showSuccess('nationality'); isNationalityValid = true; }
+            checkButton();
+        });
+        document.getElementById('cnic').addEventListener('input', function() {
+            var v = this.value.trim();
+            var pattern = /^[0-9]{5}-[0-9]{7}-[0-9]{1}$|^[0-9]{13}$/;
+            if (v === '') { showError('cnic', 'CNIC / Passport No. is required!'); isCnicValid = false; }
+            else if (!pattern.test(v)) { showError('cnic', 'Enter a valid CNIC / Passport No.'); isCnicValid = false; }
+            else { showSuccess('cnic'); isCnicValid = true; }
+            checkButton();
+        });
+        document.getElementById('religion').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('religion', 'Religion is required!'); isReligionValid = false; }
+            else { showSuccess('religion'); isReligionValid = true; }
+            checkButton();
+        });
 
-    // --- Personal Info ---
-    const photoError = document.getElementById('photo-error');
-    if (!hasFile('photo')) {
-        photoError.style.display = 'block';
-        isValid = false;
-    } else {
-        photoError.style.display = 'none';
-    }
+        // --- Contact Info ---
+        document.getElementById('email').addEventListener('input', function() {
+            var v = this.value.trim();
+            var pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (v === '') { showError('email', 'Email is required!'); isEmailValid = false; }
+            else if (!pattern.test(v)) { showError('email', 'Enter a valid email address'); isEmailValid = false; }
+            else { showSuccess('email'); isEmailValid = true; }
+            checkButton();
+        });
+        document.getElementById('password').addEventListener('input', function() {
+            var v = this.value;
+            var alpha = 0, digits = 0, special = 0;
+            var specialChars = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
+            for (var i = 0; i < v.length; i++) {
+                var c = v[i];
+                if (/[a-zA-Z]/.test(c)) alpha++;
+                else if (/[0-9]/.test(c)) digits++;
+                else if (specialChars.indexOf(c) !== -1) special++;
+            }
+            if (v.length === 8 && alpha === 3 && digits === 4 && special === 1) {
+                showSuccess('password'); isPasswordValid = true;
+            } else {
+                showError('password', 'Need 3 letters, 4 numbers, 1 special char (Total 8)'); isPasswordValid = false;
+            }
+            checkButton();
+        });
+        document.getElementById('phoneno').addEventListener('input', function() {
+            var v = this.value.trim().replace(/[\s-]/g, '');
+            var pattern = /^(\+92)[0-9]{10}$|^0[0-9]{10}$/;
+            if (v === '') { showError('phoneno', 'Phone number is required!'); isPhoneValid = false; }
+            else if (!pattern.test(v)) { showError('phoneno', 'Enter a valid phone number'); isPhoneValid = false; }
+            else { showSuccess('phoneno'); isPhoneValid = true; }
+            checkButton();
+        });
+        document.getElementById('paddress').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('paddress', 'Address is required!'); isPaddressValid = false; }
+            else { showSuccess('paddress'); isPaddressValid = true; }
+            checkButton();
+        });
+        document.getElementById('province').addEventListener('change', function() {
+            if (this.value === '') { showError('province', 'Province is required!'); isProvinceValid = false; }
+            else { showSuccess('province'); isProvinceValid = true; }
+            checkButton();
+        });
 
-    // Generic helper to check empty values
-    const checkEmpty = (id, message) => {
-        if (getVal(id) === '') {
-            showError(id, message);
-            isValid = false;
-        } else {
-            showSuccess(id);
-        }
-    };
+        document.getElementById('city').addEventListener('change', function() {
+            if (this.value === '') { showError('city', 'City is required!'); isCityValid = false; }
+            else { showSuccess('city'); isCityValid = true; }
+            checkButton();
+        });
+        document.getElementById('country').addEventListener('change', function() {
+            if (this.value === '') { showError('country', 'Country is required!'); isCountryValid = false; }
+            else { showSuccess('country'); isCountryValid = true; }
+            checkButton();
+        });
 
-    checkEmpty('firstname', 'Must not be empty!');
-    checkEmpty('lastname', 'Must not be empty!');
-    checkEmpty('fathersname', 'Must not be empty!');
-    checkEmpty('dob', 'Must select Date of birth!');
+        // --- Academic Info ---
+        document.getElementById('faculty').addEventListener('change', function() {
+            if (this.value === '') { showError('faculty', 'Please select a faculty!'); isFacultyValid = false; }
+            else { showSuccess('faculty'); isFacultyValid = true; }
+            checkButton();
+        });
+        document.getElementById('degree').addEventListener('change', function() {
+            if (this.value === '') { showError('degree', 'Please select a degree!'); isDegreeValid = false; }
+            else { showSuccess('degree'); isDegreeValid = true; }
+            checkButton();
+        });
+        document.getElementById('semester').addEventListener('change', function() {
+            if (this.value === '') { showError('semester', 'Please select a semester!'); isSemesterValid = false; }
+            else { showSuccess('semester'); isSemesterValid = true; }
+            checkButton();
+        });
+        document.querySelectorAll('input[name="stype"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                showRadioSuccess('stype'); isStypeValid = true; checkButton();
+            });
+        });
+        document.getElementById('qualification').addEventListener('change', function() {
+            if (this.value === '') { showError('qualification', 'Please select a qualification!'); isQualificationValid = false; }
+            else { showSuccess('qualification'); isQualificationValid = true; }
+            checkButton();
+        });
+        document.getElementById('obtained').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('obtained', 'Marks / GPA is required!'); isObtainedValid = false; }
+            else { showSuccess('obtained'); isObtainedValid = true; }
+            checkButton();
+        });
+        document.getElementById('pinstitution').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('pinstitution', 'Institution is required!'); isPinstitutionValid = false; }
+            else { showSuccess('pinstitution'); isPinstitutionValid = true; }
+            checkButton();
+        });
+        document.getElementById('passingyear').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('passingyear', 'Passing year is required!'); isPassingyearValid = false; }
+            else { showSuccess('passingyear'); isPassingyearValid = true; }
+            checkButton();
+        });
 
-    if (!isRadioChecked('gender')) {
-        showRadioError('gender', 'Must select a gender!');
-        isValid = false;
-    } else {
-        showRadioSuccess('gender');
-    }
+        // --- Guardian Info ---
+        document.getElementById('guardianname').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('guardianname', 'Must not be empty!'); isGuardiannameValid = false; }
+            else if (this.value.trim().length < 3) { showError('guardianname', 'Must be at least 3 characters!'); isGuardiannameValid = false; }
+            else { showSuccess('guardianname'); isGuardiannameValid = true; }
+            checkButton();
+        });
+        document.getElementById('relationship').addEventListener('change', function() {
+            if (this.value === '') { showError('relationship', 'Relationship is required!'); isRelationshipValid = false; }
+            else { showSuccess('relationship'); isRelationshipValid = true; }
+            checkButton();
+        });
+        document.getElementById('gphone').addEventListener('input', function() {
+            var v = this.value.trim().replace(/[\s-]/g, '');
+            var pattern = /^(\+92)[0-9]{10}$|^0[0-9]{10}$/;
+            if (v === '') { showError('gphone', 'Guardian phone is required!'); isGphoneValid = false; }
+            else if (!pattern.test(v)) { showError('gphone', 'Enter a valid phone number'); isGphoneValid = false; }
+            else { showSuccess('gphone'); isGphoneValid = true; }
+            checkButton();
+        });
+        document.getElementById('goccupation').addEventListener('input', function() {
+            if (this.value.trim() === '') { showError('goccupation', 'Occupation is required!'); isGoccupationValid = false; }
+            else { showSuccess('goccupation'); isGoccupationValid = true; }
+            checkButton();
+        });
 
-    checkEmpty('nationality', 'Nationality is required!');
-    checkEmpty('cnic', 'CNIC / Passport No. is required!');
-    checkEmpty('religion', 'Religion is required!');
-
-    // --- Contact Info ---
-    const email = getVal('email');
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (email === '') {
-        showError('email', 'Must not be empty!');
-        isValid = false;
-    } else if (!emailPattern.test(email)) {
-        showError('email', 'Enter a valid email address');
-        isValid = false;
-    } else {
-        showSuccess('email');
-    }
-
-    checkEmpty('phoneno', 'Phone number is required!');
-    checkEmpty('paddress', 'Address is required!');
-    checkEmpty('city', 'City is required!');
-    checkEmpty('country', 'Country is required!');
-
-    // --- Academic Info ---
-    checkEmpty('faculty', 'Must select a faculty!');
-    checkEmpty('degree', 'Must select a degree program!');
-    checkEmpty('semester', 'Must select a semester!');
-
-    if (!isRadioChecked('stype')) {
-        showRadioError('stype', 'Must select student type!');
-        isValid = false;
-    } else {
-        showRadioSuccess('stype');
-    }
-
-    checkEmpty('obtained', 'Marks / GPA is required!');
-    checkEmpty('pinstitution', 'Previous institution is required!');
-    checkEmpty('passingyear', 'Passing year is required!');
-
-    // --- Guardian Info ---
-    checkEmpty('guardianname', 'Guardian name is required!');
-    checkEmpty('gphone', 'Guardian phone is required!');
-    checkEmpty('goccupation', 'Guardian occupation is required!');
-
-    // --- Documents ---
-    const checkFile = (id, message) => {
-        if (!hasFile(id)) {
-            showFileError(id, message);
-            isValid = false;
-        } else {
-            showFileSuccess(id);
-        }
-    };
-
-    checkFile('cniccopy', 'CNIC / Passport copy is required!');
-    checkFile('matriccopy', 'Matric certificate is required!');
-    checkFile('intermediatecopy', 'Intermediate certificate is required!');
-    checkFile('domicilecopy', 'Domicile certificate is required!');
-    checkFile('charactercopy', 'Character certificate is required!');
-
-    return isValid;
-};
-
-        // when the form is submitted
-        const form = document.getElementById('form');
-        const successMsg = document.getElementById('successmessage');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            var formIsValid = validate();
-
-            if (!formIsValid) return;
-
-            if (!document.getElementById('declaration').checked) {
-                alert('Please agree to the terms and conditions before submitting.');
+        // --- Photo preview ---
+        document.getElementById('photo').addEventListener('change', function() {
+            var file = this.files[0];
+            var preview = document.querySelector('.photo-preview');
+            var photoError = document.getElementById('photo-error');
+            if (!file) {
+                isPhotoValid = false;
+                photoError.style.display = 'block';
+                preview.innerHTML = '<i class="fa fa-camera-retro"></i>';
+                checkButton();
                 return;
             }
+            if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                alert('Please upload a JPG or PNG image only.');
+                this.value = '';
+                isPhotoValid = false;
+                photoError.style.display = 'block';
+                preview.innerHTML = '<i class="fa fa-camera-retro"></i>';
+                checkButton();
+                return;
+            }
+            isPhotoValid = true;
+            photoError.style.display = 'none';
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="Preview">';
+            };
+            reader.readAsDataURL(file);
+            checkButton();
+        });
 
+        // --- Documents ---
+        ['cniccopy','matriccopy','intermediatecopy','domicilecopy','charactercopy'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', function() {
+                if (hasFile(id)) { showFileSuccess(id); }
+                else { showFileError(id, 'This document is required!'); }
+                isCniccopyValid     = hasFile('cniccopy');
+                isMatriccopyValid   = hasFile('matriccopy');
+                isIntermediateValid = hasFile('intermediatecopy');
+                isDomicileValid     = hasFile('domicilecopy');
+                isCharacterValid    = hasFile('charactercopy');
+                checkButton();
+            });
+        });
+
+        // --- Declaration ---
+        document.getElementById('declaration').addEventListener('change', function() {
+            isDeclarationValid = this.checked;
+            checkButton();
+        });
+
+        document.getElementById('form').addEventListener('reset', function() {
+            isFirstnameValid = isLastnameValid = isFathersValid = isPhotoValid = isDobValid = false;
+            isGenderValid = isNationalityValid = isCnicValid = isReligionValid = false;
+            isEmailValid = isPasswordValid = isPhoneValid = isPaddressValid = false;
+            isProvinceValid = isCityValid = isCountryValid = isFacultyValid = false;
+            isDegreeValid = isSemesterValid = isStypeValid = isQualificationValid = false;
+            isObtainedValid = isPinstitutionValid = isPassingyearValid = false;
+            isGuardiannameValid = isRelationshipValid = isGphoneValid = isGoccupationValid = false;
+            isCniccopyValid = isMatriccopyValid = isIntermediateValid = isDomicileValid = false;
+            isCharacterValid = isDeclarationValid = false;
+
+            this.querySelectorAll('.form-control').forEach(function(control) {
+                control.classList.remove('success', 'error');
+                var msg = control.querySelector('small');
+                if (msg) msg.textContent = 'Error MSG';
+            });
+            document.querySelector('.photo-preview').innerHTML = '<i class="fa fa-camera-retro" aria-hidden="true"></i>';
+            document.getElementById('photo-error').style.display = 'none';
+            checkButton();
+        });
+
+        // Prevent Enter key from submitting the form
+        document.getElementById('form').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+
+        // --- Submit ---
+        var form = document.getElementById('form');
+        var successMsg = document.getElementById('successmessage');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
             var name = getVal('firstname') + ' ' + getVal('lastname');
-
-            // hide form, show success message
             form.style.display = 'none';
             document.getElementById('success-name').textContent = name;
             successMsg.style.display = 'flex';
@@ -616,7 +743,7 @@
 </nav>
 <div class="title">
     <h2>Student Registration Form</h2>
-    <p>Academic Year 2026–2027 &nbsp;|&nbsp; Please fill all fields carefully.</p>
+    <p>Academic Year 2026&ndash;2027 &nbsp;|&nbsp; Please fill all fields carefully.</p>
 </div>
 <div class="container">
 <form class="form-card" id="form">
@@ -712,6 +839,13 @@
         <i class="fa fa-check-square" aria-hidden="true"></i>
         <small>Error MSG</small>
     </div>
+            <div class="form-control">
+        <label>Password</label>
+        <input type="text" id="password" placeholder="e.g. abc1234!">
+        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+        <i class="fa fa-check-square" aria-hidden="true"></i>
+        <small>Error MSG</small>
+    </div>
     <div class="form-control">
         <label>Phone Number</label>
         <input type="tel" id="phoneno" placeholder="+92 300 0000000">
@@ -721,21 +855,125 @@
     </div>
     <div class="form-control">
         <label>Permanent Address</label>
-        <textarea placeholder="House No., Street, City, Province, Country" id="paddress"></textarea>
+        <textarea placeholder="House No., Street Address" id="paddress"></textarea>
         <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
         <i class="fa fa-check-square" aria-hidden="true"></i>
         <small>Error MSG</small>
     </div>
     <div class="form-control">
         <label>City</label>
-        <input type="text" placeholder="e.g. Islamabad" id="city">
+                <select id="city">
+            <option value="">..Select City..</option>
+            <option>Abbottabad</option>
+            <option>Bahawalpur</option>
+            <option>Dera Ghazi Khan</option>
+            <option>Faisalabad</option>
+            <option>Gujranwala</option>
+            <option>Gujrat</option>
+            <option>Hyderabad</option>
+            <option>Islamabad</option>
+            <option>Jacobabad</option>
+            <option>Jhang</option>
+            <option>Jhelum</option>
+            <option>Karachi</option>
+            <option>Kasur</option>
+            <option>Khuzdar</option>
+            <option>Lahore</option>
+            <option>Larkana</option>
+            <option>Mardan</option>
+            <option>Mingora</option>
+            <option>Mirpur</option>
+            <option>Multan</option>
+            <option>Muzaffarabad</option>
+            <option>Nawabshah</option>
+            <option>Peshawar</option>
+            <option>Quetta</option>
+            <option>Rahim Yar Khan</option>
+            <option>Rawalpindi</option>
+            <option>Sargodha</option>
+            <option>Sheikhupura</option>
+            <option>Sialkot</option>
+            <option>Sukkur</option>
+            <option>Turbat</option>
+        </select>
         <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
         <i class="fa fa-check-square" aria-hidden="true"></i>
         <small>Error MSG</small>
     </div>
+     <div class="form-control">
+            <label>Province/Territory</label>
+            <select id="province">
+                <option value="">..Select Province..</option>
+                <option>Punjab</option>
+                <option>Sindh</option>
+                <option>Balochistan</option>
+                <option>Khyber Pakhtunkhwa</option>
+                <option>Islamabad Capital Territory</option>
+                <option>Gilgit-Baltistan</option>
+                <option>Azzad Jammu and Kashmir</option>
+            </select>
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            <i class="fa fa-check-square" aria-hidden="true"></i>
+            <small>Error MSG</small>
+        </div>
     <div class="form-control">
         <label>Country</label>
-        <input type="text" placeholder="e.g Pakistan" id="country">
+        <select id="country">
+            <option value="">..Select Country..</option>
+            <option>Afghanistan</option><option>Albania</option><option>Algeria</option>
+            <option>Andorra</option><option>Angola</option><option>Argentina</option>
+            <option>Armenia</option><option>Australia</option><option>Austria</option>
+            <option>Azerbaijan</option><option>Bahamas</option><option>Bahrain</option>
+            <option>Bangladesh</option><option>Belarus</option><option>Belgium</option>
+            <option>Belize</option><option>Benin</option><option>Bhutan</option>
+            <option>Bolivia</option><option>Bosnia and Herzegovina</option><option>Botswana</option>
+            <option>Brazil</option><option>Brunei</option><option>Bulgaria</option>
+            <option>Burkina Faso</option><option>Burundi</option><option>Cambodia</option>
+            <option>Cameroon</option><option>Canada</option><option>Chad</option>
+            <option>Chile</option><option>China</option><option>Colombia</option>
+            <option>Congo</option><option>Costa Rica</option><option>Croatia</option>
+            <option>Cuba</option><option>Cyprus</option><option>Czech Republic</option>
+            <option>Denmark</option><option>Djibouti</option><option>Dominican Republic</option>
+            <option>Ecuador</option><option>Egypt</option><option>El Salvador</option>
+            <option>Estonia</option><option>Ethiopia</option><option>Fiji</option>
+            <option>Finland</option><option>France</option><option>Gabon</option>
+            <option>Gambia</option><option>Georgia</option><option>Germany</option>
+            <option>Ghana</option><option>Greece</option><option>Guatemala</option>
+            <option>Guinea</option><option>Haiti</option><option>Honduras</option>
+            <option>Hungary</option><option>Iceland</option><option>India</option>
+            <option>Indonesia</option><option>Iran</option><option>Iraq</option>
+            <option>Ireland</option><option>Israel</option><option>Italy</option>
+            <option>Jamaica</option><option>Japan</option><option>Jordan</option>
+            <option>Kazakhstan</option><option>Kenya</option><option>Kuwait</option>
+            <option>Kyrgyzstan</option><option>Laos</option><option>Latvia</option>
+            <option>Lebanon</option><option>Libya</option><option>Lithuania</option>
+            <option>Luxembourg</option><option>Madagascar</option><option>Malawi</option>
+            <option>Malaysia</option><option>Maldives</option><option>Mali</option>
+            <option>Malta</option><option>Mauritania</option><option>Mauritius</option>
+            <option>Mexico</option><option>Moldova</option><option>Mongolia</option>
+            <option>Montenegro</option><option>Morocco</option><option>Mozambique</option>
+            <option>Myanmar</option><option>Namibia</option><option>Nepal</option>
+            <option>Netherlands</option><option>New Zealand</option><option>Nicaragua</option>
+            <option>Niger</option><option>Nigeria</option><option>North Korea</option>
+            <option>North Macedonia</option><option>Norway</option><option>Oman</option>
+            <option>Pakistan</option><option>Palestine</option><option>Panama</option>
+            <option>Paraguay</option><option>Peru</option><option>Philippines</option>
+            <option>Poland</option><option>Portugal</option><option>Qatar</option>
+            <option>Romania</option><option>Russia</option><option>Rwanda</option>
+            <option>Saudi Arabia</option><option>Senegal</option><option>Serbia</option>
+            <option>Sierra Leone</option><option>Singapore</option><option>Slovakia</option>
+            <option>Slovenia</option><option>Somalia</option><option>South Africa</option>
+            <option>South Korea</option><option>South Sudan</option><option>Spain</option>
+            <option>Sri Lanka</option><option>Sudan</option><option>Sweden</option>
+            <option>Switzerland</option><option>Syria</option><option>Taiwan</option>
+            <option>Tajikistan</option><option>Tanzania</option><option>Thailand</option>
+            <option>Togo</option><option>Tunisia</option><option>Turkey</option>
+            <option>Turkmenistan</option><option>Uganda</option><option>Ukraine</option>
+            <option>United Arab Emirates</option><option>United Kingdom</option>
+            <option>United States</option><option>Uruguay</option><option>Uzbekistan</option>
+            <option>Venezuela</option><option>Vietnam</option><option>Yemen</option>
+            <option>Zambia</option><option>Zimbabwe</option>
+        </select>
         <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
         <i class="fa fa-check-square" aria-hidden="true"></i>
         <small>Error MSG</small>
@@ -789,7 +1027,7 @@
         </div>
         <div class="form-control">
             <label>Student Type</label>
-            <div class="radio-group">
+            <div class="radio-group" style="display:block;">
                 <label><input type="radio" name="stype" value="regular">Regular</label>
                 <label><input type="radio" name="stype" value="self">Self-Finance</label>
                 <label><input type="radio" name="stype" value="foreign">Foreign</label>
@@ -925,12 +1163,12 @@
         </p>
     </div>
     <div class="check-group">
-        <input type="checkbox" id="declaration" required>
+        <input type="checkbox" id="declaration">
         <label for="declaration">I agree to the terms and conditions.</label>
     </div>
 </div>
 <div class="btn-row">
-<button type="submit" class="btn btn-submit">Submit Registration</button>
+<button type="submit" class="btn btn-submit" id="submitBtn" disabled>Submit Registration</button>
 <button type="reset" class="btn btn-reset">Reset Form</button>
 </div>
 </form>
@@ -942,3 +1180,19 @@
 </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
