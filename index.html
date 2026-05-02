@@ -133,7 +133,7 @@
 
         }
         .form-control.error input{
-            border-color: #e74c3c;
+            border-color: #dc2626;
         }
         .form-control i{
             position: absolute;
@@ -143,7 +143,7 @@
         }
         .form-control small {
             display: none;
-            color: #e74c3c;
+            color: #dc2626;
             font-size: 0.75rem;
             margin-top: 2px;
         }
@@ -155,8 +155,22 @@
             visibility: visible;
         }
         .form-control.error i.fa-exclamation-circle {
-            color: #e74c3c;
+            color: #dc2626;
             visibility: visible;
+        }
+        .password-control input {
+            padding-right: 82px;
+        }
+        .password-control .toggle-password {
+            color: #5a6a5a;
+            cursor: pointer;
+            pointer-events: auto;
+            right: 12px;
+            visibility: visible;
+        }
+        .password-control .fa-exclamation-circle,
+        .password-control .fa-check-square {
+            right: 44px;
         }
         .form-control.success select,
         .form-control.success textarea {
@@ -165,7 +179,7 @@
         .form-control.error select,
         .form-control.error textarea,
         .form-control.error input {
-            border-color: #e74c3c;
+            border-color: #dc2626;
         }
         .form-group.full { grid-column: 1 / -1; }
         label {
@@ -399,13 +413,19 @@
 
         // --- Helpers ---
         function showError(id, msg) {
-            var box = document.getElementById(id).closest('.form-control');
+            var field = document.getElementById(id);
+            if (!field) return;
+            var box = field.closest('.form-control');
+            if (!box) return;
             box.classList.add('error');
             box.classList.remove('success');
             box.querySelector('small').textContent = msg;
         }
         function showSuccess(id) {
-            var box = document.getElementById(id).closest('.form-control');
+            var field = document.getElementById(id);
+            if (!field) return;
+            var box = field.closest('.form-control');
+            if (!box) return;
             box.classList.add('success');
             box.classList.remove('error');
             box.querySelector('small').textContent = '';
@@ -437,12 +457,18 @@
             return (input?.files?.length ?? 0) > 0;
         };
         function showFileError(id, msg) {
-            var box = document.getElementById(id).closest('.form-control');
+            var field = document.getElementById(id);
+            if (!field) return;
+            var box = field.closest('.form-control');
+            if (!box) return;
             box.classList.add('error'); box.classList.remove('success');
             box.querySelector('small').textContent = msg;
         }
         function showFileSuccess(id) {
-            var box = document.getElementById(id).closest('.form-control');
+            var field = document.getElementById(id);
+            if (!field) return;
+            var box = field.closest('.form-control');
+            if (!box) return;
             box.classList.add('success'); box.classList.remove('error');
             box.querySelector('small').textContent = '';
         }
@@ -519,7 +545,33 @@
             else { showSuccess('email'); isEmailValid = true; }
             checkButton();
         });
-        document.getElementById('password').addEventListener('input', function() {
+        var passwordInput = document.getElementById('password');
+        var eyeIcon = document.getElementById('eyeIcon');
+
+        eyeIcon.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+        });
+        eyeIcon.addEventListener('click', function() {
+            var isHidden = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isHidden ? 'text' : 'password');
+            eyeIcon.classList.toggle('fa-eye', !isHidden);
+            eyeIcon.classList.toggle('fa-eye-slash', isHidden);
+            eyeIcon.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+        });
+        eyeIcon.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                eyeIcon.click();
+            }
+        });
+        passwordInput.addEventListener('blur', function() {
+            passwordInput.setAttribute('type', 'password');
+            eyeIcon.classList.add('fa-eye');
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.setAttribute('aria-label', 'Show password');
+        });
+
+        passwordInput.addEventListener('input', function() {
             var v = this.value;
             var alpha = 0, digits = 0, special = 0;
             var specialChars = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
@@ -655,6 +707,15 @@
                 checkButton();
                 return;
             }
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Photo size must be 2MB or less.');
+                this.value = '';
+                isPhotoValid = false;
+                photoError.style.display = 'block';
+                preview.innerHTML = '<i class="fa fa-camera-retro"></i>';
+                checkButton();
+                return;
+            }
             isPhotoValid = true;
             photoError.style.display = 'none';
             var reader = new FileReader();
@@ -703,6 +764,9 @@
             });
             document.querySelector('.photo-preview').innerHTML = '<i class="fa fa-camera-retro" aria-hidden="true"></i>';
             document.getElementById('photo-error').style.display = 'none';
+            passwordInput.setAttribute('type', 'password');
+            eyeIcon.classList.add('fa-eye');
+            eyeIcon.classList.remove('fa-eye-slash');
             checkButton();
         });
 
@@ -716,6 +780,8 @@
         var successMsg = document.getElementById('successmessage');
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            checkButton();
+            if (document.getElementById('submitBtn').disabled) return;
             var name = getVal('firstname') + ' ' + getVal('lastname');
             form.style.display = 'none';
             document.getElementById('success-name').textContent = name;
@@ -761,7 +827,7 @@
             <br>
             <label class="btn-upload" for="photo">Choose File</label>
             <input type="file" id="photo" accept=".jpg,.jpeg,.png" style="display:none;">
-            <small id="photo-error" style="display:none; color:#e74c3c; font-size:0.75rem; margin-top:6px;">Please upload a passport size photo!</small>
+            <small id="photo-error" style="display:none; color:#dc2626; font-size:0.75rem; margin-top:6px;">Please upload a passport size photo!</small>
         </div>
     </div>
 </div>
@@ -839,9 +905,10 @@
         <i class="fa fa-check-square" aria-hidden="true"></i>
         <small>Error MSG</small>
     </div>
-            <div class="form-control">
+            <div class="form-control password-control">
         <label>Password</label>
-        <input type="text" id="password" placeholder="e.g. abc1234!">
+        <input type="password" id="password" placeholder="e.g. abc1234!">
+        <i class="fa fa-eye toggle-password" id="eyeIcon" role="button" tabindex="0" aria-label="Show password"></i>
         <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
         <i class="fa fa-check-square" aria-hidden="true"></i>
         <small>Error MSG</small>
@@ -1007,7 +1074,7 @@
                 <option value="">..Select Program..</option>
                 <option>Bachelor's(BS/BBA/LLB)</option>
                 <option>Master's(MS/MBA/LLM/MPHIL)</option>
-                <option>PHD</option>
+                <option>PhD</option>
                 <option>Diploma</option>
             </select>
              <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
@@ -1089,7 +1156,7 @@
         <option>Father</option>
         <option>Mother</option>
         <option>Spouse</option>
-        <option>Sibiling</option>
+        <option>Sibling</option>
         <option>Other</option>
     </select>
       <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
